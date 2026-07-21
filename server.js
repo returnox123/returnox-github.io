@@ -6,8 +6,17 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname)));
 app.use(express.json());
+
+app.get(['/booking', '/booking/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'booking', 'index.html'));
+});
+
+app.get('/booking.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'booking.html'));
+});
+
+app.use(express.static(path.join(__dirname)));
 
 app.post('/api/contact', async (req, res) => {
   const { name, business, phone, schedule } = req.body;

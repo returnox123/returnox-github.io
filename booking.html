@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joe's Plumbing - Book a Call-Back</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #0f172a;
+        color: #f8fafc;
+        line-height: 1.5;
+      }
+
+      .page {
+        min-height: 100vh;
+        padding: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .card {
+        width: min(900px, 100%);
+        background: #111827;
+        border: 1px solid #334155;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+        padding: 24px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        color: #cbd5e1;
+        margin-bottom: 20px;
+      }
+
+      .picker-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .picker-row label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.95rem;
+        color: #cbd5e1;
+      }
+
+      input[type="date"], input[type="text"], input[type="tel"], textarea {
+        border: 1px solid #475569;
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: #0f172a;
+        color: #f8fafc;
+        font-size: 1rem;
+      }
+
+      .time-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .time-slot {
+        border: 1px solid #475569;
+        border-radius: 14px;
+        padding: 12px;
+        background: #1e293b;
+        color: #f8fafc;
+        cursor: pointer;
+        font-weight: 600;
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+
+      .time-slot:hover {
+        transform: translateY(-1px);
+        background: #334155;
+      }
+
+      .time-slot.selected {
+        background: #0ea5e9;
+        color: #082f49;
+        border-color: #38bdf8;
+      }
+
+      .time-slot.unavailable {
+        background: #475569;
+        color: #cbd5e1;
+        cursor: not-allowed;
+        border-color: #64748b;
+      }
+
+      .time-slot.unavailable .note {
+        color: #e2e8f0;
+        font-size: 0.8rem;
+      }
+
+      .form-group { margin-bottom: 12px; }
+      .form-group label { display: block; margin-bottom: 6px; color: #cbd5e1; }
+      textarea { width: 100%; min-height: 100px; resize: vertical; }
+
+      .button-row {
+        margin-top: 18px;
+      }
+
+      button {
+        border: 0;
+        background: #0ea5e9;
+        color: #082f49;
+        padding: 12px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      @media (max-width: 640px) {
+        .page { padding: 12px; }
+        .card { padding: 16px; }
+        .time-grid { grid-template-columns: 1fr 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="card">
+        <h1>Joe's Plumbing - Book a Call-Back</h1>
+        <p class="subtitle">Choose a date and available time below to schedule your callback.</p>
+
+        <div class="picker-row">
+          <label>
+            Select Date
+            <input id="bookingDate" type="date" />
+          </label>
+        </div>
+
+        <div class="time-grid" id="timeGrid"></div>
+
+        <form id="bookingForm">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" required style="width:100%;" />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input id="phone" name="phone" type="tel" required style="width:100%;" />
+          </div>
+
+          <div class="form-group">
+            <label for="details">Details</label>
+            <textarea id="details" name="details" required></textarea>
+          </div>
+
+          <div class="button-row">
+            <button type="submit">Confirm Booking</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const slots = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'];
+      const unavailable = new Set(['10:00 AM', '2:00 PM']);
+      const timeGrid = document.getElementById('timeGrid');
+      const bookingDate = document.getElementById('bookingDate');
+      const bookingForm = document.getElementById('bookingForm');
+      let selectedSlot = null;
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      bookingDate.value = `${yyyy}-${mm}-${dd}`;
+
+      function renderSlots() {
+        timeGrid.innerHTML = '';
+        slots.forEach((slot) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'time-slot';
+
+          if (unavailable.has(slot)) {
+            button.className += ' unavailable';
+            button.innerHTML = `<div>${slot}</div><div class="note">Unavailable</div>`;
+            button.disabled = true;
+          } else {
+            if (selectedSlot === slot) {
+              button.className += ' selected';
+            }
+            button.textContent = slot;
+            button.addEventListener('click', () => {
+              selectedSlot = slot;
+              renderSlots();
+            });
+          }
+
+          timeGrid.appendChild(button);
+        });
+      }
+
+      bookingForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!selectedSlot) {
+          alert('Please choose an available time slot.');
+          return;
+        }
+        alert(`Booking requested for ${bookingDate.value} at ${selectedSlot}.`);
+      });
+
+      renderSlots();
+    </script>
+  </body>
+</html>

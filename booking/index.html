@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joe's Plumbing - Book a Call-Back</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --neon-blue: #00bfff;
+        --dark-bg: #0a0f16;
+        --text-light: #e2e8f0;
+        --glass-bg: rgba(10, 15, 22, 0.85);
+        --glass-border: rgba(0, 191, 255, 0.2);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Roboto', sans-serif;
+        background: var(--dark-bg);
+        color: var(--text-light);
+        min-height: 100vh;
+      }
+
+      .page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, rgba(10,15,22,0.95), rgba(10,15,22,0.85));
+        padding: 24px;
+      }
+
+      .card {
+        max-width: 1100px;
+        margin: 0 auto;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.45);
+        padding: 28px;
+        backdrop-filter: blur(14px);
+      }
+
+      .hero {
+        margin-bottom: 20px;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 8px 12px;
+        border: 1px solid rgba(0,191,255,0.28);
+        border-radius: 999px;
+        background: rgba(0,191,255,0.1);
+        color: var(--neon-blue);
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+
+      h1, h2 {
+        font-family: 'League Spartan', sans-serif;
+        color: #fff;
+        letter-spacing: 1px;
+      }
+
+      h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 10px; }
+      h2 { font-size: 1.4rem; margin-bottom: 10px; }
+
+      p { color: #cbd5e1; line-height: 1.7; margin-bottom: 10px; }
+
+      .grid { display: grid; gap: 20px; grid-template-columns: 1.1fr 0.9fr; }
+      .panel {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 20px;
+      }
+
+      .date-row {
+        display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;
+      }
+
+      input, textarea {
+        width: 100%;
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: rgba(2,6,23,0.8);
+        color: #f8fafc;
+        font-size: 1rem;
+      }
+
+      .time-grid { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .time-slot {
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 14px;
+        padding: 12px;
+        background: rgba(15,23,42,0.9);
+        color: #f8fafc;
+        cursor: pointer;
+        font-weight: 600;
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      }
+      .time-slot:hover { transform: translateY(-1px); border-color: var(--neon-blue); }
+      .time-slot.selected { background: linear-gradient(90deg, #0088cc, var(--neon-blue)); color: #082f49; }
+      .time-slot.unavailable { background: rgba(71,85,105,0.8); color: #cbd5e1; cursor: not-allowed; border-color: rgba(148,163,184,0.4); }
+      .time-slot.unavailable .note { font-size: 0.8rem; color: #e2e8f0; }
+      .summary {
+        margin-top: 16px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: rgba(0,191,255,0.1);
+        color: #d7f3ff;
+      }
+      .form-group { margin-bottom: 12px; }
+      label { display: block; color: #cbd5e1; margin-bottom: 6px; font-weight: 500; }
+      button {
+        width: 100%;
+        border: 0;
+        border-radius: 999px;
+        padding: 13px 16px;
+        background: linear-gradient(90deg, #0088cc, var(--neon-blue));
+        color: #06202f;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      @media (max-width: 760px) {
+        .page { padding: 12px; }
+        .card { padding: 18px; }
+        .grid { grid-template-columns: 1fr; }
+        .time-grid { grid-template-columns: 1fr 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="card">
+        <div class="hero">
+          <div class="eyebrow">Call-back booking</div>
+          <h1>Joe's Plumbing - Book a Call-Back</h1>
+          <p>Select an available time for a call-back and we’ll confirm it right away.</p>
+        </div>
+
+        <div class="grid">
+          <div class="panel">
+            <div class="date-row">
+              <h2>Choose a date</h2>
+              <label style="display:flex; flex-direction:column; gap:6px; min-width:180px;">
+                Preferred date
+                <input id="bookingDate" type="date" />
+              </label>
+            </div>
+            <div class="time-grid" id="timeGrid"></div>
+            <div class="summary" id="selectedSummary">No time selected yet.</div>
+          </div>
+
+          <div class="panel">
+            <h2>Booking details</h2>
+            <p>We’ll use this information to confirm your call-back request.</p>
+            <form id="bookingForm">
+              <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input id="fullName" name="fullName" type="text" required placeholder="Alex Rivera" />
+              </div>
+              <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input id="phoneNumber" name="phoneNumber" type="tel" required placeholder="(555) 123-4567" />
+              </div>
+              <div class="form-group">
+                <label for="issue">What they need help with</label>
+                <textarea id="issue" name="issue" rows="4" required placeholder="Describe the issue and what kind of service you need."></textarea>
+              </div>
+              <button type="submit">Confirm Booking</button>
+              <p id="formStatus" style="margin-top:10px; color:#cbd5e1;">A confirmation message will appear here after submission.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const timeSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'];
+      const unavailableSlots = new Set(['10:00 AM', '2:00 PM']);
+      const timeGrid = document.getElementById('timeGrid');
+      const bookingDate = document.getElementById('bookingDate');
+      const selectedSummary = document.getElementById('selectedSummary');
+      const form = document.getElementById('bookingForm');
+      const formStatus = document.getElementById('formStatus');
+      let selectedTime = null;
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      bookingDate.value = `${yyyy}-${mm}-${dd}`;
+
+      function renderTimeSlots() {
+        timeGrid.innerHTML = '';
+        timeSlots.forEach((slot) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'time-slot';
+
+          if (unavailableSlots.has(slot)) {
+            button.className += ' unavailable';
+            button.innerHTML = `<div>${slot}</div><div class="note">Unavailable</div>`;
+            button.disabled = true;
+          } else {
+            if (selectedTime === slot) {
+              button.className += ' selected';
+            }
+            button.innerHTML = `<div>${slot}</div>`;
+            button.addEventListener('click', () => {
+              selectedTime = slot;
+              renderTimeSlots();
+              selectedSummary.textContent = `Selected ${bookingDate.value} at ${selectedTime}`;
+            });
+          }
+
+          timeGrid.appendChild(button);
+        });
+      }
+
+      bookingDate.addEventListener('change', () => {
+        selectedSummary.textContent = selectedTime
+          ? `Selected ${bookingDate.value} at ${selectedTime}`
+          : 'No time selected yet.';
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!selectedTime) {
+          formStatus.textContent = 'Please choose an available time slot before confirming.';
+          formStatus.style.color = '#fda4af';
+          return;
+        }
+        formStatus.textContent = `Booking request ready for ${bookingDate.value} at ${selectedTime}. We’ll contact you shortly.`;
+        formStatus.style.color = '#86efac';
+      });
+
+      renderTimeSlots();
+    </script>
+  </body>
+</html>
